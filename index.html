@@ -1,189 +1,232 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kill Control</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kill Tracker Cyberpunk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app">
+  <div class="app-shell">
     <header class="topbar">
       <div>
-        <h1>Kill Control</h1>
-        <p class="subtitle">Sistema de registro, aprovação e auditoria</p>
+        <p class="eyebrow">Guild Control Center</p>
+        <h1>Kill Tracker</h1>
       </div>
       <div class="topbar-actions">
-        <button id="usersBtn" class="secondary hidden admin-only">Usuários</button>
-        <span id="userBadge" class="badge hidden"></span>
-        <button id="logoutBtn" class="secondary hidden">Sair</button>
+        <button id="usersPanelButton" class="ghost-button admin-only hidden" type="button">Painel de Usuários</button>
+        <button id="logoutButton" class="ghost-button hidden" type="button">Sair</button>
       </div>
     </header>
 
-    <section id="authSection" class="panel auth-panel">
-      <h2>Login</h2>
-      <div class="form-grid">
-        <label>
-          <span>Email</span>
-          <input type="email" id="loginEmail" placeholder="seuemail@exemplo.com" />
-        </label>
-        <label>
-          <span>Senha</span>
-          <input type="password" id="loginPassword" placeholder="********" />
-        </label>
-      </div>
-      <div class="auth-actions">
-        <button id="loginBtn">Entrar</button>
-      </div>
-      <p class="helper">
-        O acesso é liberado apenas para usuários criados manualmente no Firebase Authentication.
-      </p>
-    </section>
+    <main class="layout">
+      <section id="loginCard" class="panel auth-panel">
+        <div class="panel-header">
+          <span class="panel-badge">Acesso</span>
+          <h2>Entrar no sistema</h2>
+          <p>Contas são criadas manualmente no Firebase. Use apenas email e senha já cadastrados.</p>
+        </div>
 
-    <section id="mainSection" class="hidden">
-      <nav class="tabs">
-        <button class="tab active" data-tab="homeTab">Home</button>
-        <button class="tab" data-tab="registerTab">Registrar Kill</button>
-        <button class="tab admin-only hidden" data-tab="reviewTab">Avaliar Kill</button>
-        <button class="tab" data-tab="auditTab">Auditoria</button>
-        <button class="tab admin-only hidden" data-tab="adjustTab">Ajuste de Pontos</button>
-        <button class="tab" data-tab="rankingTab">Pontos</button>
-      </nav>
+        <form id="loginForm" class="form-grid">
+          <label>
+            <span>Email</span>
+            <input id="loginEmail" type="email" placeholder="voce@exemplo.com" required>
+          </label>
+          <label>
+            <span>Senha</span>
+            <input id="loginPassword" type="password" placeholder="Sua senha" required>
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+        </form>
+      </section>
 
-      <section id="homeTab" class="tab-content active">
-        <div class="split">
-          <div class="panel">
-            <div class="panel-title-row">
-              <h2>Notícias</h2>
-              <button id="refreshNewsBtn" class="secondary small">Atualizar</button>
+      <section id="appContent" class="hidden">
+        <section class="hero panel">
+          <div class="hero-copy">
+            <p class="eyebrow">Controle de Guerra</p>
+            <h2 id="welcomeTitle">Carregando...</h2>
+            <p id="welcomeSubtitle">Monitore kills, aprove registros e acompanhe o ranking em tempo real.</p>
+          </div>
+          <div class="hero-stats">
+            <article class="stat-card">
+              <span>Pontos</span>
+              <strong id="currentUserPoints">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Função</span>
+              <strong id="currentUserRole">user</strong>
+            </article>
+          </div>
+        </section>
+
+        <nav class="tabs panel">
+          <button class="tab-button active" data-section="newsSection" type="button">Home</button>
+          <button class="tab-button" data-section="killSection" type="button">Registrar Kill</button>
+          <button class="tab-button admin-only hidden" data-section="reviewSection" type="button">Avaliar Kills</button>
+          <button class="tab-button admin-only hidden" data-section="adjustmentSection" type="button">Ajuste de Pontos</button>
+          <button class="tab-button" data-section="rankingSection" type="button">Ranking</button>
+          <button class="tab-button" data-section="auditSection" type="button">Auditoria</button>
+        </nav>
+
+        <div class="content-grid">
+          <section id="newsSection" class="content-section active">
+            <div class="panel">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Mural da Guild</p>
+                  <h3>Notícias</h3>
+                </div>
+              </div>
+
+              <form id="newsForm" class="form-grid admin-only hidden">
+                <label>
+                  <span>Título</span>
+                  <input id="newsTitle" type="text" maxlength="120" placeholder="Título da notícia">
+                </label>
+                <label class="full-width">
+                  <span>Conteúdo</span>
+                  <textarea id="newsContent" rows="4" maxlength="1000" placeholder="Escreva a atualização da guild..."></textarea>
+                </label>
+                <button class="primary-button" type="submit">Publicar notícia</button>
+              </form>
+
+              <div id="newsList" class="stack-list empty-state-container"></div>
             </div>
-            <div id="newsList" class="stack"></div>
-          </div>
+          </section>
 
-          <div class="panel admin-only hidden" id="newsEditorPanel">
-            <h2>Nova notícia</h2>
-            <div class="form-grid">
-              <label>
-                <span>Título</span>
-                <input type="text" id="newsTitle" placeholder="Título da notícia" />
-              </label>
-              <label class="full">
-                <span>Conteúdo</span>
-                <textarea id="newsContent" rows="6" placeholder="Texto da notícia"></textarea>
-              </label>
+          <section id="killSection" class="content-section">
+            <div class="panel">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Registro PvP</p>
+                  <h3>Registrar Kill</h3>
+                </div>
+                <div class="calculation-card">
+                  <span>Pontos calculados</span>
+                  <strong id="killPointsPreview">0</strong>
+                </div>
+              </div>
+
+              <form id="killForm" class="form-grid">
+                <label>
+                  <span>Jogador que registrou</span>
+                  <input id="killReporter" type="text" readonly>
+                </label>
+                <label>
+                  <span>Personagem que matou</span>
+                  <input id="killerName" type="text" maxlength="50" required>
+                </label>
+                <label>
+                  <span>Level do personagem que matou</span>
+                  <input id="killerLevel" type="number" min="1" required>
+                </label>
+                <label>
+                  <span>Personagem que morreu</span>
+                  <input id="victimName" type="text" maxlength="50" required>
+                </label>
+                <label>
+                  <span>Level do personagem que morreu</span>
+                  <input id="victimLevel" type="number" min="1" required>
+                </label>
+                <div class="point-breakdown full-width">
+                  <span id="killPointsBreakdown">Preencha os levels para visualizar o cálculo.</span>
+                </div>
+                <button class="primary-button" type="submit">Enviar kill</button>
+              </form>
             </div>
-            <button id="saveNewsBtn">Publicar notícia</button>
-          </div>
+          </section>
+
+          <section id="reviewSection" class="content-section">
+            <div class="panel">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Fila de Moderação</p>
+                  <h3>Kills Pendentes</h3>
+                </div>
+              </div>
+              <div id="pendingKillsList" class="stack-list empty-state-container"></div>
+            </div>
+          </section>
+
+          <section id="adjustmentSection" class="content-section">
+            <div class="panel">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Administração</p>
+                  <h3>Ajuste Manual de Pontos</h3>
+                </div>
+              </div>
+
+              <form id="adjustmentForm" class="form-grid">
+                <label>
+                  <span>Jogador</span>
+                  <select id="adjustmentUser" required></select>
+                </label>
+                <label>
+                  <span>Tipo</span>
+                  <select id="adjustmentType" required>
+                    <option value="add">Adicionar pontos</option>
+                    <option value="remove">Remover pontos</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Quantidade</span>
+                  <input id="adjustmentAmount" type="number" min="1" required>
+                </label>
+                <label class="full-width">
+                  <span>Observação</span>
+                  <textarea id="adjustmentObservation" rows="4" maxlength="500" placeholder="Motivo obrigatório para o ajuste." required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Salvar ajuste</button>
+              </form>
+            </div>
+          </section>
+
+          <section id="rankingSection" class="content-section">
+            <div class="panel">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Placar Geral</p>
+                  <h3>Ranking</h3>
+                </div>
+                <button id="refreshRankingButton" class="ghost-button" type="button">Atualizar</button>
+              </div>
+              <div id="rankingList" class="stack-list empty-state-container"></div>
+            </div>
+          </section>
+
+          <section id="auditSection" class="content-section">
+            <div class="panel">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Rastro Operacional</p>
+                  <h3>Auditoria</h3>
+                </div>
+              </div>
+              <div id="auditList" class="stack-list empty-state-container"></div>
+            </div>
+          </section>
         </div>
       </section>
-
-      <section id="registerTab" class="tab-content">
-        <div class="panel">
-          <h2>Registrar Kill</h2>
-          <div class="form-grid">
-            <label>
-              <span>Usuário que registrou</span>
-              <input type="text" id="registradoPorNome" readonly />
-            </label>
-            <label>
-              <span>Personagem que matou</span>
-              <input type="text" id="charMatou" placeholder="Nome do personagem" />
-            </label>
-            <label>
-              <span>Level do personagem que matou</span>
-              <input type="number" id="levelMatou" min="1" placeholder="Ex.: 650" />
-            </label>
-            <label>
-              <span>Personagem que morreu</span>
-              <input type="text" id="charMorreu" placeholder="Nome do personagem" />
-            </label>
-            <label>
-              <span>Level do personagem que morreu</span>
-              <input type="number" id="levelMorreu" min="1" placeholder="Ex.: 720" />
-            </label>
-            <label>
-              <span>Pontos calculados</span>
-              <input type="text" id="previewPontos" readonly placeholder="Será calculado automaticamente" />
-            </label>
-          </div>
-          <div class="actions">
-            <button id="calculateBtn" class="secondary">Calcular pontos</button>
-            <button id="submitKillBtn">Enviar para aprovação</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="reviewTab" class="tab-content admin-only hidden">
-        <div class="panel">
-          <div class="panel-title-row">
-            <h2>Kills pendentes</h2>
-            <button id="refreshPendingBtn" class="secondary small">Atualizar</button>
-          </div>
-          <div id="pendingList" class="stack"></div>
-        </div>
-      </section>
-
-      <section id="auditTab" class="tab-content">
-        <div class="panel">
-          <div class="panel-title-row">
-            <h2>Auditoria</h2>
-            <button id="refreshAuditBtn" class="secondary small">Atualizar</button>
-          </div>
-          <div id="auditList" class="stack"></div>
-        </div>
-      </section>
-
-      <section id="adjustTab" class="tab-content admin-only hidden">
-        <div class="panel">
-          <h2>Ajuste de Pontos</h2>
-          <div class="form-grid">
-            <label>
-              <span>Jogador</span>
-              <select id="adjustTargetUser"></select>
-            </label>
-            <label>
-              <span>Tipo</span>
-              <select id="adjustType">
-                <option value="debit">Descontar</option>
-                <option value="credit">Adicionar</option>
-              </select>
-            </label>
-            <label>
-              <span>Valor</span>
-              <input type="number" id="adjustValue" min="1" placeholder="Ex.: 10" />
-            </label>
-            <label class="full">
-              <span>OBS</span>
-              <textarea id="adjustObs" rows="5" placeholder="Justificativa obrigatória"></textarea>
-            </label>
-          </div>
-          <button id="saveAdjustmentBtn">Salvar ajuste</button>
-        </div>
-      </section>
-
-      <section id="rankingTab" class="tab-content">
-        <div class="panel">
-          <div class="panel-title-row">
-            <h2>Pontos de todos os usuários</h2>
-            <button id="refreshRankingBtn" class="secondary small">Atualizar</button>
-          </div>
-          <div id="rankingList" class="stack"></div>
-        </div>
-      </section>
-    </section>
-
-    <div id="usersPanel" class="panel hidden users-panel admin-only">
-      <div class="panel-title-row">
-        <h2>Usuários cadastrados</h2>
-        <button id="closeUsersPanelBtn" class="secondary small">X</button>
-      </div>
-      <div id="usersList" class="stack"></div>
-    </div>
-
-    <div id="toast" class="toast hidden"></div>
+    </main>
   </div>
 
-  <script type="module" src="firebase-config.js"></script>
+  <aside id="usersPanel" class="side-panel hidden" aria-hidden="true">
+    <div class="side-panel-header">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h3>Usuários</h3>
+      </div>
+      <button id="closeUsersPanelButton" class="ghost-button" type="button">Fechar</button>
+    </div>
+    <div id="usersPanelList" class="stack-list empty-state-container"></div>
+  </aside>
+
+  <div id="toastContainer" class="toast-container"></div>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>
