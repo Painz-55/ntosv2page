@@ -133,9 +133,9 @@ function getBasePoints(victimLevel) {
 function getMultiplier(killerLevel, victimLevel) {
   const difference = victimLevel - killerLevel;
 
-  if (difference >= 101) return 0.5;
-  if (difference >= 0) return 1;
-  if (difference >= -100) return 1.5;
+  if (difference < -100) return 0.5;
+  if (difference <= 0) return 1;
+  if (difference <= 100) return 1.5;
   return 2;
 }
 
