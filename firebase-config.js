@@ -9,13 +9,13 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDc1xAAv-6Namx8bACRS-tsAEpZHiZZE74",
-  authDomain: "guildsitentosv2.firebaseapp.com",
-  databaseURL: "https://guildsitentosv2-default-rtdb.firebaseio.com",
-  projectId: "guildsitentosv2",
-  storageBucket: "guildsitentosv2.firebasestorage.app",
-  messagingSenderId: "1070647907884",
-  appId: "1:1070647907884:web:7897f7a576f917b5cbe389"
+  apiKey: "AIzaSyDPnnJRWdKzjVEIaQJjoORtuA_q9kg6sXs",
+  authDomain: "databasesitebr2.firebaseapp.com",
+  databaseURL: "https://databasesitebr2-default-rtdb.firebaseio.com/",
+  projectId: "databasesitebr2",
+  storageBucket: "databasesitebr2.firebasestorage.app",
+  messagingSenderId: "354607115653",
+  appId: "1:354607115653:web:17a30122d7487fd45ee8ec"
 };
 
 const app = initializeApp(firebaseConfig);
