@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kill Control</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <h1>Kill Control</h1>
+        <p class="subtitle">Sistema de registro, aprovação e auditoria</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="usersBtn" class="secondary hidden admin-only">Usuários</button>
+        <span id="userBadge" class="badge hidden"></span>
+        <button id="logoutBtn" class="secondary hidden">Sair</button>
+      </div>
+    </header>
+
+    <section id="authSection" class="panel auth-panel">
+      <h2>Login</h2>
+      <div class="form-grid">
+        <label>
+          <span>Email</span>
+          <input type="email" id="loginEmail" placeholder="seuemail@exemplo.com" />
+        </label>
+        <label>
+          <span>Senha</span>
+          <input type="password" id="loginPassword" placeholder="********" />
+        </label>
+      </div>
+      <div class="auth-actions">
+        <button id="loginBtn">Entrar</button>
+      </div>
+      <p class="helper">
+        O acesso é liberado apenas para usuários criados manualmente no Firebase Authentication.
+      </p>
+    </section>
+
+    <section id="mainSection" class="hidden">
+      <nav class="tabs">
+        <button class="tab active" data-tab="homeTab">Home</button>
+        <button class="tab" data-tab="registerTab">Registrar Kill</button>
+        <button class="tab admin-only hidden" data-tab="reviewTab">Avaliar Kill</button>
+        <button class="tab" data-tab="auditTab">Auditoria</button>
+        <button class="tab admin-only hidden" data-tab="adjustTab">Ajuste de Pontos</button>
+        <button class="tab" data-tab="rankingTab">Pontos</button>
+      </nav>
+
+      <section id="homeTab" class="tab-content active">
+        <div class="split">
+          <div class="panel">
+            <div class="panel-title-row">
+              <h2>Notícias</h2>
+              <button id="refreshNewsBtn" class="secondary small">Atualizar</button>
+            </div>
+            <div id="newsList" class="stack"></div>
+          </div>
+
+          <div class="panel admin-only hidden" id="newsEditorPanel">
+            <h2>Nova notícia</h2>
+            <div class="form-grid">
+              <label>
+                <span>Título</span>
+                <input type="text" id="newsTitle" placeholder="Título da notícia" />
+              </label>
+              <label class="full">
+                <span>Conteúdo</span>
+                <textarea id="newsContent" rows="6" placeholder="Texto da notícia"></textarea>
+              </label>
+            </div>
+            <button id="saveNewsBtn">Publicar notícia</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="registerTab" class="tab-content">
+        <div class="panel">
+          <h2>Registrar Kill</h2>
+          <div class="form-grid">
+            <label>
+              <span>Usuário que registrou</span>
+              <input type="text" id="registradoPorNome" readonly />
+            </label>
+            <label>
+              <span>Personagem que matou</span>
+              <input type="text" id="charMatou" placeholder="Nome do personagem" />
+            </label>
+            <label>
+              <span>Level do personagem que matou</span>
+              <input type="number" id="levelMatou" min="1" placeholder="Ex.: 650" />
+            </label>
+            <label>
+              <span>Personagem que morreu</span>
+              <input type="text" id="charMorreu" placeholder="Nome do personagem" />
+            </label>
+            <label>
+              <span>Level do personagem que morreu</span>
+              <input type="number" id="levelMorreu" min="1" placeholder="Ex.: 720" />
+            </label>
+            <label>
+              <span>Pontos calculados</span>
+              <input type="text" id="previewPontos" readonly placeholder="Será calculado automaticamente" />
+            </label>
+          </div>
+          <div class="actions">
+            <button id="calculateBtn" class="secondary">Calcular pontos</button>
+            <button id="submitKillBtn">Enviar para aprovação</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="reviewTab" class="tab-content admin-only hidden">
+        <div class="panel">
+          <div class="panel-title-row">
+            <h2>Kills pendentes</h2>
+            <button id="refreshPendingBtn" class="secondary small">Atualizar</button>
+          </div>
+          <div id="pendingList" class="stack"></div>
+        </div>
+      </section>
+
+      <section id="auditTab" class="tab-content">
+        <div class="panel">
+          <div class="panel-title-row">
+            <h2>Auditoria</h2>
+            <button id="refreshAuditBtn" class="secondary small">Atualizar</button>
+          </div>
+          <div id="auditList" class="stack"></div>
+        </div>
+      </section>
+
+      <section id="adjustTab" class="tab-content admin-only hidden">
+        <div class="panel">
+          <h2>Ajuste de Pontos</h2>
+          <div class="form-grid">
+            <label>
+              <span>Jogador</span>
+              <select id="adjustTargetUser"></select>
+            </label>
+            <label>
+              <span>Tipo</span>
+              <select id="adjustType">
+                <option value="debit">Descontar</option>
+                <option value="credit">Adicionar</option>
+              </select>
+            </label>
+            <label>
+              <span>Valor</span>
+              <input type="number" id="adjustValue" min="1" placeholder="Ex.: 10" />
+            </label>
+            <label class="full">
+              <span>OBS</span>
+              <textarea id="adjustObs" rows="5" placeholder="Justificativa obrigatória"></textarea>
+            </label>
+          </div>
+          <button id="saveAdjustmentBtn">Salvar ajuste</button>
+        </div>
+      </section>
+
+      <section id="rankingTab" class="tab-content">
+        <div class="panel">
+          <div class="panel-title-row">
+            <h2>Pontos de todos os usuários</h2>
+            <button id="refreshRankingBtn" class="secondary small">Atualizar</button>
+          </div>
+          <div id="rankingList" class="stack"></div>
+        </div>
+      </section>
+    </section>
+
+    <div id="usersPanel" class="panel hidden users-panel admin-only">
+      <div class="panel-title-row">
+        <h2>Usuários cadastrados</h2>
+        <button id="closeUsersPanelBtn" class="secondary small">X</button>
+      </div>
+      <div id="usersList" class="stack"></div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
