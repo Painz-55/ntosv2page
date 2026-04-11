@@ -387,6 +387,32 @@ async function sendDiscordWebhook(payload) {
   }
 }
 
+async function sendApprovalDiscordWebhook(payload) {
+  const webhookUrl = sanitizeText(appSettings.discordApprovalWebhookUrl);
+  if (!webhookUrl || webhookUrl.includes("COLE_AQUI")) return;
+
+  const content = [
+    "**Kill aprovada**",
+    `Jogador: ${payload.reporterName}`,
+    `Assassino: ${payload.killerName} (Lv ${payload.killerLevel})`,
+    `Vitima: ${payload.victimName} (Lv ${payload.victimLevel})`,
+    `Pontos finais: ${payload.finalPoints}`,
+    `Aprovado por: ${payload.reviewedByName}`,
+    `Observacao: ${payload.observation || "Sem observacao."}`
+  ].join("\n");
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content })
+    });
+  } catch (error) {
+    console.error("Webhook de aprovacao falhou:", error);
+    showToast("Kill aprovada, mas o webhook de aprovação falhou.", "warning");
+  }
+}
+
 async function handleLogin(event) {
   event.preventDefault();
   const email = sanitizeText(document.getElementById("loginEmail").value);
@@ -520,6 +546,15 @@ async function reviewKill(killId, nextStatus) {
     observation: observation || "Sem observação.",
     createdAt: reviewedAt
   });
+
+  if (nextStatus === "approved") {
+    await sendApprovalDiscordWebhook({
+      ...kill,
+      finalPoints,
+      observation,
+      reviewedByName: state.profile.name
+    });
+  }
 
   showToast(nextStatus === "approved" ? "Kill aprovada." : "Kill reprovada.", nextStatus === "approved" ? "success" : "warning");
 }
