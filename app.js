@@ -73,6 +73,8 @@ const refs = {
   audits: ref(db, "audits")
 };
 
+const realtimeUnsubscribers = [];
+
 const pointsTable = [
   { min: 800, points: 50 },
   { min: 700, points: 30 },
@@ -119,6 +121,13 @@ function showFirebaseError(context, error) {
   }
 
   showToast(`Falha em ${context}. Veja o console do navegador para mais detalhes.`, "error");
+}
+
+function clearRealtimeListeners() {
+  while (realtimeUnsubscribers.length) {
+    const unsubscribe = realtimeUnsubscribers.pop();
+    if (typeof unsubscribe === "function") unsubscribe();
+  }
 }
 
 function renderEmptyState(message) {
@@ -631,7 +640,9 @@ async function deleteAuditRecord(auditId) {
 }
 
 function bindRealtimeData() {
-  onValue(refs.users, (snapshot) => {
+  clearRealtimeListeners();
+
+  realtimeUnsubscribers.push(onValue(refs.users, (snapshot) => {
     state.users = snapshot.val() || {};
     state.profile = state.authUser ? state.users[state.authUser.uid] || null : null;
 
@@ -648,28 +659,28 @@ function bindRealtimeData() {
     renderAll();
   }, (error) => {
     showFirebaseError("users", error);
-  });
+  }));
 
-  onValue(refs.news, (snapshot) => {
+  realtimeUnsubscribers.push(onValue(refs.news, (snapshot) => {
     state.news = snapshot.val() || {};
     renderNews();
   }, (error) => {
     showFirebaseError("news", error);
-  });
+  }));
 
-  onValue(refs.kills, (snapshot) => {
+  realtimeUnsubscribers.push(onValue(refs.kills, (snapshot) => {
     state.kills = snapshot.val() || {};
     renderPendingKills();
   }, (error) => {
     showFirebaseError("kills", error);
-  });
+  }));
 
-  onValue(refs.audits, (snapshot) => {
+  realtimeUnsubscribers.push(onValue(refs.audits, (snapshot) => {
     state.audits = snapshot.val() || {};
     renderAudit();
   }, (error) => {
     showFirebaseError("audits", error);
-  });
+  }));
 }
 
 function handleAuthState(user) {
@@ -678,12 +689,19 @@ function handleAuthState(user) {
 
   if (!user) {
     state.profile = null;
+    state.users = {};
+    state.news = {};
+    state.kills = {};
+    state.audits = {};
+    clearRealtimeListeners();
     updateAppVisibility();
     updateRoleBasedUI();
+    renderAll();
     return;
   }
 
   state.profile = state.users[user.uid] || null;
+  bindRealtimeData();
   updateAppVisibility();
   updateRoleBasedUI();
 
@@ -747,5 +765,4 @@ function bindEvents() {
 }
 
 bindEvents();
-bindRealtimeData();
 onAuthStateChanged(auth, handleAuthState);
